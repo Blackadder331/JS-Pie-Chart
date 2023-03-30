@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buy and Sell Stocks</title>
+</head>
+<style>
+    body {
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #333;
+}
+
+h1 {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+ul {
+    display: flex;
+    flex-direction: column;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+li {
+  display: inline-block;
+  width: 25%;
+  padding: 10px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  margin: 2px;
+}
+
+li:hover {
+  background-color: #eee;
+}
+
+.buy-button {
+  background-color: #333;
+  color: #fff;
+  padding: 10px 20px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  width: 6rem;
+}
+
+.sell-button {
+  background-color: #fff;
+  color: #333;
+  padding: 10px 20px;
+  border: 1px solid #333;
+  cursor: pointer;
+  width: 6rem;
+}
+
+.commission-fee {
+  font-size: 12px;
+  color: #aaa;
+  text-align: right;
+}
+
+
+#portfolio-piechart {
+  width: 500px;
+  height: 500px;
+  margin: 0 auto;
+}
+
+#portfolio-piechart .pie-chart {
+  width: 100%;
+  height: 100%;
+  border: 1px solid #ccc;
+}
+
+#portfolio-piechart .pie-chart .pie-slice {
+  fill: #fff;
+  stroke-width: 2px;
+  stroke: #333;
+}
+
+#portfolio-piechart .pie-chart .pie-slice.active {
+  fill: #333;
+  stroke-width: 4px;
+  stroke: #fff;
+}
+
+#portfolio-piechart .pie-chart .pie-slice.text {
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  font-weight: bold;
+  fill: #333;
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
+
+#chart-container {
+        display: flex;
+        flex-direction: row;
+      }
+#chart {
+width: 500px;
+height: 500px;
+margin-right: 50px;
+}
+#legend {
+display: flex;
+flex-direction: column;
+justify-content: center;
+}
+.legend-item {
+display: flex;
+align-items: center;
+margin-bottom: 10px;
+}
+.legend-color {
+width: 20px;
+height: 20px;
+margin-right: 10px;
+}
+
+#portfolio-piechart {
+  width: 500px;
+  height: 500px;
+  margin: 0 auto;
+}
+
+#portfolio-piechart .pie-chart {
+  width: 100%;
+  height: 100%;
+  border: 1px solid #ccc;
+}
+#chart {
+  width: 300px;
+  height: 300px;
+}
+</style>
+<body>
+  <h1>Buy and Sell Stocks</h1>
+  <p>Here is a list of stocks that you can buy and sell:</p>
+  <ul>
+    <li>Apple</li>
+        <button class="buy-button">Buy</button>
+        <button class="sell-button">Sell</button>
+    <li>Amazon</li>
+        <button class="buy-button">Buy</button>
+        <button class="sell-button">Sell</button>
+    <li>Microsoft</li>
+        <button class="buy-button">Buy</button>
+        <button class="sell-button">Sell</button>
+    <li>Alphabet</li>
+        <button class="buy-button">Buy</button>
+        <button class="sell-button">Sell</button>
+    <li>Tesla</li>
+        <button class="buy-button">Buy</button>
+        <button class="sell-button">Sell</button>
+  </ul>
+  <p>To buy a stock, simply click on the "Buy" button next to the stock that you want to buy. To sell a stock, simply click on the "Sell" button next to the stock that you want to sell.</p>
+  <p>Please note that all stock transactions are subject to a commission fee.</p>
+  <p>Thank you for using our stock trading app!</p>
+
+  <div id="chart-container">
+    <canvas id="chart" width="500" height="500"></canvas>
+    <div id="legend"></div>
+  </div>
+
+<script>
+// Vanilla JS Only Pie Chart
+
+var data = [  {    "name": "Apple",    "price": 100,    "shares": 100,    "color": "#FF6384"  },  {    "name": "Amazon",    "price": 200,    "shares": 50,    "color": "#36A2EB"  },  {    "name": "Microsoft",    "price": 300,    "shares": 25,    "color": "#FFCE56"  },  {    "name": "Alphabet",    "price": 400,    "shares": 10,    "color": "#4BC0C0"  },  {    "name": "Tesla",    "price": 500,    "shares": 5,    "color": "#9966FF"  }];
+
+var canvas = document.getElementById("chart");
+var ctx = canvas.getContext("2d");
+
+var total = 0;
+for (var i = 0; i < data.length; i++) {
+  total += data[i].shares;
+}
+
+var startAngle = 0;
+for (var i = 0; i < data.length; i++) {
+  var sliceAngle = 2 * Math.PI * data[i].shares / total;
+  ctx.beginPath();
+  ctx.moveTo(canvas.width / 2, canvas.height / 2);
+  ctx.arc(canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height) / 2 - 10, startAngle, startAngle + sliceAngle);
+  ctx.fillStyle = data[i].color;
+  ctx.fill();
+  startAngle += sliceAngle;
+
+  var legendItem = document.createElement("div");
+  legendItem.classList.add("legend-item");
+  var legendColor = document.createElement("div");
+  legendColor.classList.add("legend-color");
+  legendColor.style.backgroundColor = data[i].color;
+  legendItem.appendChild(legendColor);
+  var legendText = document.createElement("div");
+  legendText.textContent = data[i].name + " - Price: $" + data[i].price + ", Shares: " + data[i].shares;
+  legendItem.appendChild(legendText);
+  document.getElementById("legend").appendChild(legendItem);
+}
+
+var lastAngle = -Math.PI / 2;
+for (var i = 0; i < data.length; i++) {
+  var sliceAngle = 2 * Math.PI * data[i].shares / total;
+  ctx.fillStyle = data[i].color;
+  ctx.beginPath();
+  ctx.moveTo(canvas.width / 2, canvas.height / 2);
+  ctx.arc(canvas.width / 2, canvas.height / 2, canvas.width / 2, lastAngle, lastAngle + sliceAngle);
+  ctx.lineTo(canvas.width / 2, canvas.height / 2);
+  ctx.fill();
+  lastAngle += sliceAngle;
+}
+
+</script>
+</body>
+</html>
